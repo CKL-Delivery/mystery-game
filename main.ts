@@ -16,6 +16,9 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
         pause(100)
         me.setPosition(108, 22)
         game.showLongText("2 keys done 1 to go", DialogLayout.Bottom)
+        mySprite.destroy()
+        mySprite3.destroy()
+        mySprite2.destroy()
     }
     if (true) {
     	
@@ -40,9 +43,9 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (me.tileKindAt(TileDirection.Center, assets.tile`myTile1`)) {
         pause(100)
         tiles.setTilemap(tilemap`level7`)
-        me.setPosition(4, 4)
+        me.setPosition(16, 8)
         game.showLongText("a maze, get through the maze to get to the first key", DialogLayout.Bottom)
-        game.showLongText("you cant go on the bricks only on the blue", DialogLayout.Bottom)
+        game.showLongText("don't fall in the lava", DialogLayout.Bottom)
         game.showLongText("when you find the door press the B button", DialogLayout.Bottom)
     }
     if (me.tileKindAt(TileDirection.Center, assets.tile`myTile2`)) {
@@ -113,6 +116,13 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         game.splash("this is currently not in", "the game it will be added")
     }
 })
+controller.B.onEvent(ControllerButtonEvent.Repeated, function () {
+    me.startEffect(effects.confetti)
+})
+info.onLifeZero(function () {
+    scene.cameraShake(8, 200)
+    game.over(false, effects.melt)
+})
 let mySprite2: Sprite = null
 let mySprite3: Sprite = null
 let mySprite: Sprite = null
@@ -140,6 +150,8 @@ me.setPosition(19, 29)
 controller.moveSprite(me)
 tiles.setTilemap(tilemap`level1`)
 scene.cameraFollowSprite(me)
+info.setLife(5)
+info.setScore(0)
 girl_1 = sprites.create(img`
     .fff.ffff.fff...................
     fffffccccfffff..................
@@ -178,3 +190,22 @@ girl_1.setPosition(170, 41)
 game.splash("oh good your here!")
 game.splash("something has happened", "we need your help")
 game.showLongText("walk over to the girl and press the A button to talk to her", DialogLayout.Bottom)
+forever(function () {
+    if (me.tileKindAt(TileDirection.Center, assets.tile`myTile1`)) {
+        info.changeScoreBy(1)
+        pause(10000)
+    }
+    if (me.tileKindAt(TileDirection.Center, assets.tile`myTile4`)) {
+        info.changeScoreBy(1)
+        pause(10000)
+        info.setLife(5)
+    }
+    if (me.tileKindAt(TileDirection.Center, sprites.dungeon.hazardLava1)) {
+        info.changeLifeBy(-1)
+        me.setPosition(18, 9)
+    }
+    if (info.score() == 100) {
+        effects.confetti.startScreenEffect(5000)
+        game.over(true)
+    }
+})
